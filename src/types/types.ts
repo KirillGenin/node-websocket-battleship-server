@@ -1,3 +1,5 @@
+import { WebSocket } from 'ws';
+
 /* ENUM */
 
 export enum GameEvent {
@@ -49,7 +51,11 @@ export interface ResponseDataReg {
   errorText: string;
 }
 
-export interface ResponseReg {
-  type: GameEvent.REG;
-  data: ResponseDataReg;
+/* MODEL */
+
+export interface Player {
+  id: number;
+  name: string;
+  password: string;
+  ws: WebSocket;
 }
