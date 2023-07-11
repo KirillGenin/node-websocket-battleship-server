@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
 import { RequestDataReg, ResponseDataReg, GameEvent } from '../../types/types';
-import model from '../model/app';
+import appModel from '../model/app';
 
 export const handlerRegistration = (data: RequestDataReg, ws: WebSocket) => {
   const { name, password } = data;
@@ -14,23 +14,16 @@ export const handlerRegistration = (data: RequestDataReg, ws: WebSocket) => {
     );
   };
 
-  const foundPlayer = model.players.findPlayerByName(name);
+  const foundPlayer = appModel.players.findPlayerByName(name);
 
   if (!foundPlayer) {
-    const index = model.players.addPlayer(data, ws);
-    send({ name, index, error: false, errorText: '' });
-  } else {
-    const isCorrectPassword = foundPlayer.password === password;
-
-    if (isCorrectPassword) {
-      send({ name, index: foundPlayer.id, error: false, errorText: '' });
-    } else {
-      send({
-        name,
-        index: foundPlayer.id,
-        error: true,
-        errorText: 'Incorrect password',
-      });
-    }
-  }
+    const playerID = appModel.players.addPlayer(ws, data);
+    send({ name, index: playerID, error: false, errorText: '' });
+  } else
+    send({
+      name,
+      index: foundPlayer.id,
+      error: true,
+      errorText: 'This nickname is already taken',
+    });
 };

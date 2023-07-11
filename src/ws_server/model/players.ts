@@ -2,32 +2,33 @@ import { WebSocket } from 'ws';
 import { Player, RequestDataReg } from '../../types/types';
 
 export class Players {
-  players: Player[];
-  id: number;
+  players: Map<WebSocket, Player>;
+  currentID: number;
 
   constructor() {
-    this.players = [];
-    this.id = 0;
+    this.players = new Map();
+    this.currentID = 0;
   }
 
-  public addPlayer(data: RequestDataReg, ws: WebSocket) {
+  public addPlayer(ws: WebSocket, data: RequestDataReg) {
     const player: Player = {
-      id: this.generateID(),
+      id: this.getID(),
       ...data,
-      ws,
     };
 
-    this.players.push(player);
+    this.players.set(ws, player);
 
     return player.id;
   }
 
   public findPlayerByName(name: string) {
-    return this.players.find((player) => player.name === name);
+    return Array.from(this.players.values()).find(
+      (player) => player.name === name
+    );
   }
 
-  private generateID() {
-    this.id++;
-    return this.id;
+  private getID() {
+    this.currentID++;
+    return this.currentID;
   }
 }
