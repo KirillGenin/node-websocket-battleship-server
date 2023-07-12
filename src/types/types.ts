@@ -44,12 +44,21 @@ export interface RequestDataReg {
 
 /* RESPONSE */
 
-export interface ResponseDataReg {
+export type ResponseData = ResponseDataReg | ResponseDataWinners;
+
+export type ResponseDataReg = {
   name: string;
   index: number;
   error: boolean;
   errorText: string;
-}
+};
+
+export type ResponseDataWinner = {
+  name: string;
+  wins: number;
+};
+
+export type ResponseDataWinners = ResponseDataWinner[];
 
 /* MODEL */
 
@@ -57,4 +66,8 @@ export interface Player {
   id: number;
   name: string;
   password: string;
+}
+
+export interface IWinners {
+  [name: string]: number;
 }

@@ -1,28 +1,29 @@
 import { WebSocket } from 'ws';
-import { RequestDataReg, ResponseDataReg, GameEvent } from '../../types/types';
+import {
+  RequestDataReg,
+  ResponseDataReg,
+  ResponseDataWinners,
+  GameEvent,
+} from '../../types/types';
+import { send } from '../../utils/utils';
 import appModel from '../model/app';
 
 export const handlerRegistration = (data: RequestDataReg, ws: WebSocket) => {
   const { name, password } = data;
 
-  const sendResponse = (data: ResponseDataReg) => {
-    ws.send(
-      JSON.stringify({
-        type: GameEvent.REG,
-        data: JSON.stringify(data),
-      })
-    );
-  };
+  const sendReg = send<ResponseDataReg>;
+  const sendWinners = send<ResponseDataWinners>;
 
   const isValidPassword = password.length >= 5;
 
   if (!isValidPassword) {
-    sendResponse({
+    sendReg(ws, GameEvent.REG, {
       name,
       index: 0,
       error: true,
       errorText: 'Password minimum 5 characters',
     });
+
     return;
   }
 
@@ -30,7 +31,16 @@ export const handlerRegistration = (data: RequestDataReg, ws: WebSocket) => {
 
   if (!foundPlayer) {
     const playerID = appModel.players.addPlayer(ws, data);
-    sendResponse({ name, index: playerID, error: false, errorText: '' });
+
+    sendReg(ws, GameEvent.REG, {
+      name,
+      index: playerID,
+      error: false,
+      errorText: '',
+    });
+
+    sendWinners(ws, GameEvent.UPDATE_WINNERS, appModel.winners.getWinners());
+
     return;
   }
 
@@ -38,12 +48,19 @@ export const handlerRegistration = (data: RequestDataReg, ws: WebSocket) => {
 
   if (playerWS.readyState === WebSocket.CLOSED) {
     if (player.password === password) {
-      const { id: playerID } = player;
       appModel.players.removePlayer(playerWS);
-      appModel.players.addPlayer(ws, data, playerID);
-      sendResponse({ name, index: playerID, error: false, errorText: '' });
+      appModel.players.addPlayer(ws, data, player.id);
+
+      sendReg(ws, GameEvent.REG, {
+        name,
+        index: player.id,
+        error: false,
+        errorText: '',
+      });
+
+      sendWinners(ws, GameEvent.UPDATE_WINNERS, appModel.winners.getWinners());
     } else {
-      sendResponse({
+      sendReg(ws, GameEvent.REG, {
         name,
         index: 0,
         error: true,
@@ -51,7 +68,7 @@ export const handlerRegistration = (data: RequestDataReg, ws: WebSocket) => {
       });
     }
   } else {
-    sendResponse({
+    sendReg(ws, GameEvent.REG, {
       name,
       index: 0,
       error: true,

@@ -2,8 +2,8 @@ import { WebSocket } from 'ws';
 import { Player, RequestDataReg } from '../../types/types';
 
 export class Players {
-  players: Map<WebSocket, Player>;
-  currentID: number;
+  private players: Map<WebSocket, Player>;
+  private currentID: number;
 
   constructor() {
     this.players = new Map();
