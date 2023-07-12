@@ -10,9 +10,9 @@ export class Players {
     this.currentID = 0;
   }
 
-  public addPlayer(ws: WebSocket, data: RequestDataReg) {
+  public addPlayer(ws: WebSocket, data: RequestDataReg, id?: number) {
     const player: Player = {
-      id: this.getID(),
+      id: id ? id : this.getID(),
       ...data,
     };
 
@@ -22,9 +22,13 @@ export class Players {
   }
 
   public findPlayerByName(name: string) {
-    return Array.from(this.players.values()).find(
-      (player) => player.name === name
+    return Array.from(this.players.entries()).find(
+      (player) => player[1].name === name
     );
+  }
+
+  public removePlayer(ws: WebSocket) {
+    this.players.delete(ws);
   }
 
   private getID() {
