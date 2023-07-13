@@ -40,6 +40,10 @@ export class Rooms {
     return this.rooms.get(id) as Room[];
   }
 
+  public removeRoom(roomID: number) {
+    this.rooms.delete(roomID);
+  }
+
   private generateRoomID() {
     this.currentID += 1;
     return this.currentID;
