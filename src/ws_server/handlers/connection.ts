@@ -1,6 +1,17 @@
 import { WebSocket } from 'ws';
-import { RequestMessage, RequestDataReg, GameEvent } from '../../types/types';
-import { handlerRegistration, handlerCreateRoom, closeWebsocket } from './';
+import {
+  RequestMessage,
+  RequestDataReg,
+  GameEvent,
+  RequestData,
+  RequestDataAddUserToRoom,
+} from '../../types/types';
+import {
+  handlerRegistration,
+  handlerCreateRoom,
+  closeWebsocket,
+  handlerAddUserToRoom,
+} from './';
 
 export const handlerConnection = (ws: WebSocket) => {
   ws.send(
@@ -25,16 +36,23 @@ export const handlerConnection = (ws: WebSocket) => {
     try {
       const request: RequestMessage = JSON.parse(message);
 
+      let data: RequestData = '';
+
+      if (request.data && request.data.trim()) {
+        data = JSON.parse(request.data);
+      }
+
       switch (request.type) {
         case GameEvent.REG:
-          {
-            const data: RequestDataReg = JSON.parse(request.data);
-            handlerRegistration(data, ws);
-          }
+          handlerRegistration(data as RequestDataReg, ws);
           break;
 
         case GameEvent.CREATE_ROOM:
           handlerCreateRoom(ws);
+          break;
+
+        case GameEvent.ADD_USER_TO_ROOM:
+          handlerAddUserToRoom(data as RequestDataAddUserToRoom, ws);
           break;
 
         default:

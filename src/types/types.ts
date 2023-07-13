@@ -37,14 +37,24 @@ export interface RequestMessage {
   data: string;
 }
 
-export interface RequestDataReg {
+export type RequestData = RequestDataReg | RequestDataAddUserToRoom | string;
+
+export type RequestDataReg = {
   name: string;
   password: string;
-}
+};
+
+export type RequestDataAddUserToRoom = {
+  indexRoom: number;
+};
 
 /* RESPONSE */
 
-export type ResponseData = ResponseDataReg | ResponseDataWinners | ResponseDataUpdateRooms;
+export type ResponseData =
+  | ResponseDataReg
+  | ResponseDataWinners
+  | ResponseDataUpdateRooms
+  | ResponseDataCreateGame;
 
 export type ResponseDataReg = {
   name: string;
@@ -69,6 +79,11 @@ export type ResponseDataUpdateRoom = {
 };
 
 export type ResponseDataUpdateRooms = ResponseDataUpdateRoom[];
+
+export type ResponseDataCreateGame = {
+  idGame: number;
+  idPlayer: number;
+};
 
 /* MODEL */
 
