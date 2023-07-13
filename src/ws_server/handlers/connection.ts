@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
 import { RequestMessage, RequestDataReg, GameEvent } from '../../types/types';
-import { handlerRegistration, handlerCreateRoom } from './';
+import { handlerRegistration, handlerCreateRoom, closeWebsocket } from './';
 
 export const handlerConnection = (ws: WebSocket) => {
   ws.send(
@@ -17,10 +17,13 @@ export const handlerConnection = (ws: WebSocket) => {
     ws.close();
   });
 
+  ws.on('close', () => {
+    closeWebsocket(ws);
+  });
+
   ws.on('message', (message: string) => {
     try {
       const request: RequestMessage = JSON.parse(message);
-      console.log('request:', request);
 
       switch (request.type) {
         case GameEvent.REG:
