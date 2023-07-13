@@ -32,7 +32,7 @@ export class Players {
     return this.players.get(ws) as Player;
   }
 
-  public updatePlayerRoom(ws: WebSocket, roomID: number) {
+  public updatePlayerRoom(ws: WebSocket, roomID: number | null) {
     const player = this.players.get(ws);
 
     if (player) {
