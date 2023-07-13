@@ -13,6 +13,7 @@ export class Players {
   public addPlayer(ws: WebSocket, data: RequestDataReg, id?: number) {
     const player: Player = {
       id: id ? id : this.getID(),
+      room: null,
       ...data,
     };
 
@@ -25,6 +26,25 @@ export class Players {
     return Array.from(this.players.entries()).find(
       (player) => player[1].name === name
     );
+  }
+
+  public getPlayer(ws: WebSocket) {
+    return this.players.get(ws) as Player;
+  }
+
+  public updatePlayerRoom(ws: WebSocket, roomID: number) {
+    const player = this.players.get(ws);
+
+    if (player) {
+      this.players.set(ws, {
+        ...player,
+        room: roomID,
+      });
+    }
+  }
+
+  public getPlayers() {
+    return Array.from(this.players.keys());
   }
 
   public removePlayer(ws: WebSocket) {

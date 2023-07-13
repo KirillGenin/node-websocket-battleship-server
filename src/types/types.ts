@@ -44,7 +44,7 @@ export interface RequestDataReg {
 
 /* RESPONSE */
 
-export type ResponseData = ResponseDataReg | ResponseDataWinners;
+export type ResponseData = ResponseDataReg | ResponseDataWinners | ResponseDataUpdateRooms;
 
 export type ResponseDataReg = {
   name: string;
@@ -60,13 +60,30 @@ export type ResponseDataWinner = {
 
 export type ResponseDataWinners = ResponseDataWinner[];
 
+export type ResponseDataUpdateRoom = {
+  roomId: number;
+  roomUsers: {
+    name: string;
+    index: number;
+  }[];
+};
+
+export type ResponseDataUpdateRooms = ResponseDataUpdateRoom[];
+
 /* MODEL */
 
 export interface Player {
   id: number;
   name: string;
   password: string;
+  room: null | number;
 }
+
+export type Room = {
+  ws: WebSocket;
+  index: number;
+  name: string;
+};
 
 export interface IWinners {
   [name: string]: number;

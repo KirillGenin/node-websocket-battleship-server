@@ -41,6 +41,10 @@ export const handlerRegistration = (data: RequestDataReg, ws: WebSocket) => {
 
     sendWinners(ws, GameEvent.UPDATE_WINNERS, appModel.winners.getWinners());
 
+    appModel.players.getPlayers().forEach((ws) => {
+      send(ws, GameEvent.UPDATE_ROOM, appModel.rooms.getListOpenRooms());
+    });
+
     return;
   }
 
@@ -59,6 +63,10 @@ export const handlerRegistration = (data: RequestDataReg, ws: WebSocket) => {
       });
 
       sendWinners(ws, GameEvent.UPDATE_WINNERS, appModel.winners.getWinners());
+
+      appModel.players.getPlayers().forEach((ws) => {
+        send(ws, GameEvent.UPDATE_ROOM, appModel.rooms.getListOpenRooms());
+      });
     } else {
       sendReg(ws, GameEvent.REG, {
         name,

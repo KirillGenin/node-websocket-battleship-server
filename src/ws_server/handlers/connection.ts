@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
 import { RequestMessage, RequestDataReg, GameEvent } from '../../types/types';
-import { handlerRegistration } from './';
+import { handlerRegistration, handlerCreateRoom } from './';
 
 export const handlerConnection = (ws: WebSocket) => {
   ws.send(
@@ -28,6 +28,10 @@ export const handlerConnection = (ws: WebSocket) => {
             const data: RequestDataReg = JSON.parse(request.data);
             handlerRegistration(data, ws);
           }
+          break;
+
+        case GameEvent.CREATE_ROOM:
+          handlerCreateRoom(ws);
           break;
 
         default:
