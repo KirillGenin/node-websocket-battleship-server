@@ -5,12 +5,18 @@ import {
   GameEvent,
   RequestData,
   RequestDataAddUserToRoom,
+  RequestDataAddShips,
+  RequestDataAttack,
+  RequestDataRandomAttack,
 } from '../../types/types';
 import {
   handlerRegistration,
   handlerCreateRoom,
   closeWebsocket,
   handlerAddUserToRoom,
+  handlerAddShips,
+  handlerAttack,
+  handlerRandomAttack,
 } from './';
 
 export const handlerConnection = (ws: WebSocket) => {
@@ -53,6 +59,18 @@ export const handlerConnection = (ws: WebSocket) => {
 
         case GameEvent.ADD_USER_TO_ROOM:
           handlerAddUserToRoom(data as RequestDataAddUserToRoom, ws);
+          break;
+
+        case GameEvent.ADD_SHIPS:
+          handlerAddShips(data as RequestDataAddShips, ws);
+          break;
+
+        case GameEvent.ATTACK:
+          handlerAttack(data as RequestDataAttack, ws);
+          break;
+
+        case GameEvent.RANDOMATTACK:
+          handlerRandomAttack(data as RequestDataRandomAttack, ws);
           break;
 
         default:

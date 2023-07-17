@@ -37,7 +37,13 @@ export interface RequestMessage {
   data: string;
 }
 
-export type RequestData = RequestDataReg | RequestDataAddUserToRoom | string;
+export type RequestData =
+  | RequestDataReg
+  | RequestDataAddUserToRoom
+  | RequestDataAddShips
+  | RequestDataAttack
+  | RequestDataRandomAttack
+  | string;
 
 export type RequestDataReg = {
   name: string;
@@ -48,13 +54,34 @@ export type RequestDataAddUserToRoom = {
   indexRoom: number;
 };
 
+export type RequestDataAddShips = {
+  gameId: number;
+  ships: InitShips;
+  indexPlayer: number;
+};
+
+export type RequestDataAttack = {
+  gameId: number;
+  x: number;
+  y: number;
+  indexPlayer: number;
+};
+
+export type RequestDataRandomAttack = {
+  gameId: number;
+  indexPlayer: number;
+};
+
 /* RESPONSE */
 
 export type ResponseData =
   | ResponseDataReg
   | ResponseDataWinners
   | ResponseDataUpdateRooms
-  | ResponseDataCreateGame;
+  | ResponseDataCreateGame
+  | ResponseDataStartGame
+  | ResponseDataTurn
+  | ResponseDataFinish;
 
 export type ResponseDataReg = {
   name: string;
@@ -85,6 +112,28 @@ export type ResponseDataCreateGame = {
   idPlayer: number;
 };
 
+export type ResponseDataStartGame = {
+  ships: InitShips;
+  currentPlayerIndex: number;
+};
+
+export type ResponseDataTurn = {
+  currentPlayer: number;
+};
+
+export type ResponseDataAttack = {
+  position: {
+    x: number;
+    y: number;
+  };
+  currentPlayer: number;
+  status: AttackStatus;
+};
+
+export type ResponseDataFinish = {
+  winPlayer: number;
+};
+
 /* MODEL */
 
 export interface Player {
@@ -103,3 +152,47 @@ export type Room = {
 export interface IWinners {
   [name: string]: number;
 }
+
+export type IGame = {
+  currentPlayer: GamePlayerID | null;
+  winPlayer: GamePlayerID | null;
+  players: Map<GamePlayerID, GamePlayer>;
+  initPlayerShips: Map<
+    WebSocket,
+    { playerID: GamePlayerID; initShips: InitShips }
+  >;
+};
+
+export type GamePlayerID = number;
+
+export type GamePlayer = {
+  ws: WebSocket;
+  ships: GamePlayerShips;
+};
+
+export type GamePlayerShips = GamePlayerShip[];
+
+export type GamePlayerShip = {
+  positions: ShipPositions;
+  isKilled: boolean;
+};
+
+export type ShipPositions = ShipPosition[];
+
+export type ShipPosition = {
+  x: number;
+  y: number;
+  isHit: boolean;
+};
+
+export type InitShips = InitShip[];
+
+export type InitShip = {
+  position: {
+    x: number;
+    y: number;
+  };
+  direction: boolean;
+  length: number;
+  type: ShipType;
+};

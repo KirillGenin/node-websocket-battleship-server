@@ -1,7 +1,11 @@
 import { WebSocket } from 'ws';
 import appModel from '../model/app';
 import { send } from '../../utils/utils';
-import { GameEvent, RequestDataAddUserToRoom } from '../../types/types';
+import {
+  GameEvent,
+  RequestDataAddUserToRoom,
+  ResponseDataCreateGame,
+} from '../../types/types';
 
 export const handlerAddUserToRoom = (
   data: RequestDataAddUserToRoom,
@@ -17,11 +21,24 @@ export const handlerAddUserToRoom = (
 
   appModel.players.updatePlayerRoom(ws, targetRoomID);
 
+  appModel.rooms.removeRoom(currentRoomID as number);
+
   appModel.players.getPlayers().forEach((ws) => {
     send(ws, GameEvent.UPDATE_ROOM, appModel.rooms.getListOpenRooms());
   });
 
+  const newGameID = appModel.games.createGame();
+
   const room = appModel.rooms.getRoom(targetRoomID);
 
-  console.log(room);
+  room.forEach((currentPlayer) => {
+    const idGame = newGameID;
+    const idPlayer = room.find((player) => player.name === currentPlayer.name)
+      ?.index as number;
+
+    send<ResponseDataCreateGame>(currentPlayer.ws, GameEvent.CREATE_GAME, {
+      idGame,
+      idPlayer,
+    });
+  });
 };
